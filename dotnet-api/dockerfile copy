@@ -1,0 +1,40 @@
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /src
+
+COPY ["TechChallengeContatosRegionais.sln", "."]
+COPY ["API/API.csproj", "API/"]
+COPY ["Application/Application.csproj", "Application/"]
+COPY ["Application.Test/Application.Test.csproj", "Application.Test/"]
+COPY ["Domain/Domain.csproj", "Domain/"]
+COPY ["Infrastructure/Infrastructure.csproj", "Infrastructure/"]
+
+RUN dotnet restore
+
+COPY . .
+
+ARG DB_SERVER
+ARG DB_NAME
+ARG DB_USER
+ARG DB_PASS
+ARG DB_PORT
+
+ENV DB_SERVER=${DB_SERVER}
+ENV DB_NAME=${DB_NAME}
+ENV DB_USER=${DB_USER}
+ENV DB_PASS=${DB_PASS}
+ENV DB_PORT=${DB_PORT}
+
+RUN dotnet tool install --global dotnet-ef
+ENV PATH="${PATH}:/root/.dotnet/tools"
+RUN dotnet ef database update --startup-project ./Infrastructure --project ./Infrastructure --context OnlyReadDbContext
+
+WORKDIR /src/API
+RUN dotnet publish -c Release -o /app
+
+FROM mcr.microsoft.com/dotnet/aspnet:8.0
+WORKDIR /app
+COPY --from=build /app .
+
+ENTRYPOINT ["dotnet","API.dll"]
+
+EXPOSE 8080

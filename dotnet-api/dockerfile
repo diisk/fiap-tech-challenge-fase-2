@@ -1,0 +1,57 @@
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+USER app
+WORKDIR /app
+
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+ARG BUILD_CONFIGURATION=Release
+WORKDIR /src
+
+ARG DB_SERVER
+ARG DB_NAME
+ARG DB_USER
+ARG DB_PASS
+ARG DB_PORT
+
+ENV DB_SERVER=${DB_SERVER}
+ENV DB_NAME=${DB_NAME}
+ENV DB_USER=${DB_USER}
+ENV DB_PASS=${DB_PASS}
+ENV DB_PORT=${DB_PORT}
+
+# Copiar os projetos e a solution
+COPY ["TechChallengeContatosRegionais.sln", "."]
+COPY ["API/API.csproj", "API/"]
+COPY ["Application/Application.csproj", "Application/"]
+COPY ["Application.Test/Application.Test.csproj", "Application.Test/"]
+COPY ["Domain/Domain.csproj", "Domain/"]
+COPY ["Infrastructure/Infrastructure.csproj", "Infrastructure/"]
+
+# Restaurar pacotes
+RUN dotnet restore
+
+# Copiar o código fonte
+COPY . .
+
+# Instalar dotnet-ef tool
+RUN dotnet tool install --global dotnet-ef --version 8.0.8
+ENV PATH="$PATH:/root/.dotnet/tools"
+
+# Construir o projeto Infrastructure
+RUN dotnet build "./Infrastructure/Infrastructure.csproj" -c $BUILD_CONFIGURATION -o /app/build
+
+# Rodar migrations (opcional: antes da publicação)
+RUN dotnet ef database update --context OnlyReadDbContext --project ./Infrastructure --startup-project ./Infrastructure -- --environment Development
+
+FROM build AS publish
+ARG BUILD_CONFIGURATION=Release
+RUN dotnet publish "./API/API.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+
+FROM base AS final
+WORKDIR /app
+COPY --from=publish /app/publish .
+
+# Definir o ponto de entrada
+ENTRYPOINT ["dotnet", "API.dll"]
+
+# Expor a porta padrão
+EXPOSE 8080
