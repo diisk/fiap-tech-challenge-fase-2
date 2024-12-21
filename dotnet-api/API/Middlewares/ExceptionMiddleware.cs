@@ -36,7 +36,7 @@ namespace API.Middlewares
                 message = exception.Message;
             }
 
-            return ResponseService.GetPatterResponse(context, status, message);
+            return ResponseService.GetPatterResponse(context, status, exception.ToString());
         }
     }
 }

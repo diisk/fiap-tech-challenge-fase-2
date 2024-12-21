@@ -5,32 +5,32 @@ namespace Infrastructure.DbContexts
 {
     public static class DbContextOptionsConfigurator
     {
-        public static DbContextOptions<T> Create<T>(string appSettingsProjectName) where T : DbContext
+        public static DbContextOptions<T> Create<T>() where T : DbContext
         {
             var optionsBuilder = new DbContextOptionsBuilder<T>();
-            Configure(optionsBuilder, appSettingsProjectName);
+            Configure(optionsBuilder);
             return optionsBuilder.Options;
         }
 
-        public static void Configure(DbContextOptionsBuilder optionsBuilder, string appSettingsProjectName)
+        public static void Configure(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
-                string environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
-
-                IConfigurationRoot configuration = new ConfigurationBuilder()
-                    .SetBasePath(Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory())!.FullName, appSettingsProjectName))
+                var enviroment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")??"Development";
+                var connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__ConnectionString");
+                if (enviroment.ToUpper()=="DEVELOPMENT")
+                {
+                    IConfigurationRoot configuration = new ConfigurationBuilder()
+                    .SetBasePath(AppContext.BaseDirectory)
                     .AddJsonFile("appsettings.json")
-                    .AddJsonFile($"appsettings.{environment}.json", optional: true)
                     .Build();
-
-                var connectionString = configuration.GetConnectionString("ConnectionString");
-
-                optionsBuilder.UseMySql("Server=mysql;Database=tc1_contatos_regionais;User=root;Password=123456;Port=3306;", new MySqlServerVersion(new Version(8, 0, 25)));
-                //optionsBuilder.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 25)));
-                optionsBuilder.UseLazyLoadingProxies(true);
+                    connectionString = configuration.GetConnectionString("ConnectionString");
+                }
+                
+                optionsBuilder.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 25)));
+                //optionsBuilder.UseLazyLoadingProxies(true);
             }
-            
+
         }
     }
 }

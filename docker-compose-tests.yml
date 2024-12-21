@@ -1,0 +1,48 @@
+version: "3.8"
+services:
+  migrations:
+    build:
+      context: ./dotnet-api/
+      dockerfile: dockerfile-migrations
+    restart: "no"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - app-network
+  api:
+    build:
+      context: ./dotnet-api/
+    ports:
+      - "5000:8080"
+    depends_on:
+      migrations:
+        condition: service_completed_successfully
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__ConnectionString=Server=mysql;Database=tc1_contatos_regionais;User=root;Password=123456;Port=3306;
+    networks:
+      - app-network
+
+  mysql:
+    image: mysql:8.0
+    ports:
+      - "3307:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=123456
+      - MYSQL_DATABASE=tc1_contatos_regionais
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  mysql-data:
+
+networks:
+  app-network:

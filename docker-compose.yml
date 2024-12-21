@@ -12,18 +12,18 @@ services:
       - mysql_data:/var/lib/mysql
     restart: always
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      test: ["CMD", "mysql", "-h", "localhost", "-u", "root", "-p123456", "-e", "SELECT 1;"]
       interval: 10s
-      timeout: 5s
       retries: 5
+      timeout: 5s
   api:
     build:
       context: ./dotnet-api/
     ports:
       - "8080:8080"
+      - "8081:8081"
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
-      - DOTNET_URLS=http://+:8080
       - DB_SERVER=mysql
       - DB_NAME=tc1_contatos_regionais
       - DB_USER=root

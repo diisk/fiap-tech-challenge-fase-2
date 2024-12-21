@@ -40,12 +40,12 @@ builder.Services.AddMemoryCache();
 
 builder.Services.AddDbContext<OnlyReadDbContext>(options =>
 {
-    DbContextOptionsConfigurator.Configure(options, "API");
+    DbContextOptionsConfigurator.Configure(options);
 }, ServiceLifetime.Scoped);
 
 builder.Services.AddDbContext<OnlyWriteDbContext>(options =>
 {
-    DbContextOptionsConfigurator.Configure(options, "API");
+    DbContextOptionsConfigurator.Configure(options);
 }, ServiceLifetime.Scoped);
 
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();

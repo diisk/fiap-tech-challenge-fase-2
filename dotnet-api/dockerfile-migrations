@@ -1,7 +1,6 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-
 COPY ["TechChallengeContatosRegionais.sln", "."]
 COPY ["API/API.csproj", "API/"]
 COPY ["Application/Application.csproj", "Application/"]
@@ -12,10 +11,7 @@ RUN dotnet restore
 
 COPY . .
 
-RUN dotnet publish -c Release -o /app/publish
+RUN dotnet tool install --global dotnet-ef
+ENV PATH="${PATH}:/root/.dotnet/tools"
 
-FROM build AS final
-WORKDIR /app
-COPY --from=build /app/publish .
-
-ENTRYPOINT ["dotnet","API.dll"]
+ENTRYPOINT ["sh", "-c", "dotnet ef database update --context OnlyReadDbContext --project Infrastructure/Infrastructure.csproj --startup-project API/API.csproj"]
