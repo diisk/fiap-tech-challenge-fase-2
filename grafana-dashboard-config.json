@@ -23,8 +23,7 @@
   "panels": [
     {
       "datasource": {
-        "type": "prometheus",
-        "uid": "ae7pk68nw15vke"
+        "type": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -111,8 +110,7 @@
       "targets": [
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "ae7pk68nw15vke"
+            "type": "prometheus"
           },
           "editorMode": "code",
           "exemplar": false,
@@ -129,8 +127,7 @@
     },
     {
       "datasource": {
-        "type": "prometheus",
-        "uid": "ae7pk68nw15vke"
+        "type": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -210,8 +207,7 @@
       "targets": [
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "ae7pk68nw15vke"
+            "type": "prometheus"
           },
           "editorMode": "code",
           "exemplar": false,
@@ -228,8 +224,7 @@
     },
     {
       "datasource": {
-        "type": "prometheus",
-        "uid": "ae7pk68nw15vke"
+        "type": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -293,8 +288,7 @@
       "targets": [
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "ae7pk68nw15vke"
+            "type": "prometheus"
           },
           "disableTextWrap": false,
           "editorMode": "code",
@@ -312,8 +306,7 @@
     },
     {
       "datasource": {
-        "type": "prometheus",
-        "uid": "ae7pk68nw15vke"
+        "type": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -366,8 +359,7 @@
       "targets": [
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "ae7pk68nw15vke"
+            "type": "prometheus"
           },
           "editorMode": "code",
           "expr": "sum(rate(process_cpu_time_seconds_total{job=\"aspnet-metrics\"}[1m])) * 100",
@@ -381,8 +373,7 @@
     },
     {
       "datasource": {
-        "type": "prometheus",
-        "uid": "ae7pk68nw15vke"
+        "type": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -481,8 +472,7 @@
       "targets": [
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "ae7pk68nw15vke"
+            "type": "prometheus"
           },
           "editorMode": "code",
           "exemplar": false,
@@ -500,8 +490,7 @@
     },
     {
       "datasource": {
-        "type": "prometheus",
-        "uid": "ae7pk68nw15vke"
+        "type": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -605,8 +594,7 @@
       "targets": [
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "ae7pk68nw15vke"
+            "type": "prometheus"
           },
           "editorMode": "code",
           "expr": "sum(rate(process_runtime_dotnet_gc_collections_count_total{job=\"aspnet-metrics\"}[1m]))",
@@ -633,7 +621,6 @@
   "timepicker": {},
   "timezone": "browser",
   "title": "Dashboard Fiap TC Fase 2 Test",
-  "uid": "fe7oy29bl5340bsd",
   "version": 2,
   "weekStart": ""
 }
