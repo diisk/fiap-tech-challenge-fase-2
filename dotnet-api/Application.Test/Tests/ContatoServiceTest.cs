@@ -10,6 +10,7 @@ using Moq;
 
 namespace Application.Test.Tests
 {
+    [Trait("Category", "Unit")]
     public class ContatoServiceTest : IClassFixture<ContatoFixture>, IClassFixture<AreaFixture>
     {
         private readonly ContatoFixture fixture;

@@ -1,38 +1,49 @@
-version: "3.8"
-
 services:
+  migrations:
+    build:
+      context: ./dotnet-api/
+      dockerfile: dockerfile-migrations
+    image: migrations-image
+    restart: "no"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__ConnectionString=Server=mysql;Database=tc1_contatos_regionais;User=root;Password=123456;Port=3306;
+    networks:
+      - app-network
   mysql:
     image: mysql:8.0
-    environment:
-      MYSQL_ROOT_PASSWORD: 123456
-      MYSQL_DATABASE: tc1_contatos_regionais
     ports:
       - "3307:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=123456
+      - MYSQL_DATABASE=tc1_contatos_regionais
     volumes:
       - mysql_data:/var/lib/mysql
-    restart: always
     healthcheck:
-      test: ["CMD", "mysql", "-h", "localhost", "-u", "root", "-p123456", "-e", "SELECT 1;"]
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
       interval: 10s
-      retries: 5
       timeout: 5s
+      retries: 5
+    networks:
+      - app-network
   api:
     build:
       context: ./dotnet-api/
+    image: api-image
     ports:
       - "8080:8080"
-      - "8081:8081"
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
-      - DB_SERVER=mysql
-      - DB_NAME=tc1_contatos_regionais
-      - DB_USER=root
-      - DB_PASS=123456
-      - DB_PORT=3306
+      - ConnectionStrings__ConnectionString=Server=mysql;Database=tc1_contatos_regionais;User=root;Password=123456;Port=3306;
     depends_on:
       mysql:
         condition: service_healthy
     restart: always
+    networks:
+      - app-network
     # healthcheck:
     #   test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
     #   interval: 10s
@@ -44,11 +55,15 @@ services:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
     ports:
       - "9090:9090"
-    environment:
-      - API_HOST=api
-      - API_PORT=8080
     depends_on:
       - api
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-S", "http://prometheus:9090/-/healthy"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
   grafana:
     image: grafana/grafana:latest
     ports:
@@ -60,7 +75,12 @@ services:
       - GF_SECURITY_ADMIN_PASSWORD=admin
     volumes:
       - grafana_data:/var/lib/grafana
+    networks:
+      - app-network
 
 volumes:
   grafana_data:
   mysql_data:
+
+networks:
+  app-network:

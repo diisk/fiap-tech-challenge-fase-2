@@ -11,6 +11,7 @@ using Moq;
 
 namespace Application.Test.Tests
 {
+    [Trait("Category", "Unit")]
     public class AuthServiceTest : IClassFixture<UsuarioFixture>
     {
         private readonly UsuarioFixture fixture;

@@ -8,6 +8,7 @@ using Moq;
 
 namespace Application.Test.Tests
 {
+    [Trait("Category","Unit")]
     public class AreaServiceTest : IClassFixture<AreaFixture>
     {
         

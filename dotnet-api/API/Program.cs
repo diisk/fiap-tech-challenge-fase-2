@@ -23,6 +23,8 @@ using Prometheus;
 using System.Net;
 using System.Reflection;
 using System.Text;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,6 +35,18 @@ builder.Services.AddControllers(options =>
 {
     options.Filters.Add(new AuthorizeFilter());
 });
+
+builder.Services.AddOpenTelemetry()
+    .ConfigureResource(resource => resource
+        .AddService(serviceName: "API"))
+.WithMetrics(builder => builder
+.AddMeter("AppMetrics")
+.AddAspNetCoreInstrumentation()
+.AddRuntimeInstrumentation()
+.AddProcessInstrumentation()
+.AddPrometheusExporter());
+
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -56,6 +70,7 @@ builder.Services.AddScoped<IContatoRepository, ContatoRepository>();
 builder.Services.AddTransient<IResponseService, ResponseService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<ICryptoService, CryptoService>();
+builder.Services.AddSingleton<IMetricsService, MetricsService>();
 builder.Services.AddScoped<ICacheService, CacheService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 
@@ -158,14 +173,18 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+
 }
 
-app.UseHttpsRedirection();
+app.UseSwagger();
+app.UseSwaggerUI();
 
-app.UseMetricServer();
-app.UseHttpMetrics();
+//app.UseHttpsRedirection();
+
+//app.UseMetricServer();
+//app.UseHttpMetrics();
+app.UseMiddleware<MetricsMiddleware>();
+app.UseOpenTelemetryPrometheusScrapingEndpoint();
 
 app.UseAuthentication();
 app.UseAuthorization();
@@ -174,4 +193,4 @@ app.MapControllers();
 
 app.UseMiddleware<ExceptionMiddleware>();
 
-app.Run();
+app.Run("http://0.0.0.0:8080");
