@@ -194,3 +194,5 @@ app.MapControllers();
 app.UseMiddleware<ExceptionMiddleware>();
 
 app.Run("http://0.0.0.0:8080");
+
+public partial class Program { }

@@ -43,20 +43,20 @@ jobs:
     - name: Run unit tests
       run: dotnet test --filter "Category=Unit" --configuration Release --verbosity normal
 
-  # integration-tests:
-  #   needs: unit-tests
-  #   runs-on: ubuntu-latest
-  #   defaults:
-  #     run:
-  #       working-directory: ./dotnet-api
+  integration-tests:
+    needs: unit-tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./dotnet-api
 
-  #   steps:
-  #   - uses: actions/checkout@v4
+    steps:
+    - uses: actions/checkout@v4
     
-  #   - name: Setup .NET
-  #     uses: actions/setup-dotnet@v4
-  #     with:
-  #       dotnet-version: 8.0.x
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
         
-  #   - name: Run integration tests
-  #     run: dotnet test --filter "Category=Integration" --configuration Release --verbosity normal
+    - name: Run integration tests
+      run: dotnet test --filter "Category=Integration" --configuration Release --verbosity normal

@@ -18,6 +18,6 @@ namespace Domain.Entities
         [Required]
         [Range(10,99, ErrorMessage = "O código de área deve conter 2 dígitos.")]
         public required int CodigoArea { get; set; }
-        public required virtual Area Area { get; set; }
+        public virtual Area? Area { get; set; }
     }
 }
