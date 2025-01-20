@@ -39,11 +39,5 @@ namespace API.Controllers
             var response = mapper.Map<List<AreaResponse>>(retorno);
             return responseService.Ok(response);
         }
-
-        [HttpGet]
-        public ActionResult<string> Teste()
-        {
-            return Ok("Tudo certo!");
-        }
     }
 }
